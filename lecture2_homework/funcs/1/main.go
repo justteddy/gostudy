@@ -1,30 +1,42 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+	"reflect"
+)
 
-type memoizeFunction func(int, ...int) interface{}
+type memoizeFunction func(int) int
 
-// TODO реализовать
-var fibonacci memoizeFunction
-var romanForDecimal memoizeFunction
-
-//TODO Write memoization function
-
-func memoize(function memoizeFunction) memoizeFunction {
-	return function
+func fibonacci(n int) int {
+	if n < 3 {
+		return 1
+	} else {
+		return fibonacci(n-1) + fibonacci(n-2)
+	}
 }
 
-// TODO обернуть функции fibonacci и roman в memoize
-func init() {
+//TODO Write memoization function
+func memoize(fn memoizeFunction) memoizeFunction {
+	history := make(map[string]map[int]int)
+
+	return func(n int) int {
+		if res, ok := history[reflect.TypeOf(fn).String()]; ok {
+			if val, ok := res[n]; ok {
+				fmt.Println("reading from history...")
+				return val
+			}
+		}
+
+		val := fn(n)
+		history[reflect.TypeOf(fn).String()] = map[int]int{n: val}
+		return val
+	}
 }
 
 func main() {
-	fmt.Println("Fibonacci(45) =", fibonacci(45).(int))
-	for _, x := range []int{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13,
-		14, 15, 16, 17, 18, 19, 20, 25, 30, 40, 50, 60, 69, 70, 80,
-		90, 99, 100, 200, 300, 400, 500, 600, 666, 700, 800, 900,
-		1000, 1009, 1444, 1666, 1945, 1997, 1999, 2000, 2008, 2010,
-		2012, 2500, 3000, 3999} {
-		fmt.Printf("%4d = %s\n", x, romanForDecimal(x).(string))
-	}
+	// fibonacci test
+	memoFb := memoize(fibonacci)
+	fmt.Println("Fibonacci(15) =", memoFb(15))
+	fmt.Println("Fibonacci(15) =", memoFb(15))
+	fmt.Println("Fibonacci(15) =", memoFb(15))
 }
