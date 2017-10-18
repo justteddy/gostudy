@@ -15,7 +15,6 @@ func fibonacci(n int) int {
 	}
 }
 
-//TODO Write memoization function
 func memoize(fn memoizeFunction) memoizeFunction {
 	history := make(map[string]map[int]int)
 
