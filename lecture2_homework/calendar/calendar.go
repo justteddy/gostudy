@@ -1,20 +1,29 @@
 package main
 
 import (
-	"fmt"
 	"time"
 )
 
-func main() {
-	parsed, _ := time.Parse("2006-01-02", fmt.Sprintf("2015-%s-15", "02"))
-	calendar := NewCalendar(parsed)
-	calendar.CurrentQuarter()
+// Calendar return struct with time.Time type
+type Calendar struct {
+	time.Time
 }
 
-// NewCalendar time type
-type NewCalendar interface{}
+// NewCalendar returns calendar
+func NewCalendar(parsed time.Time) Calendar {
+	return Calendar{parsed}
+}
 
-// CurrentQuarter show quarter
-func (n NewCalendar) CurrentQuarter() {
-	fmt.Println(123)
+// CurrentQuarter returns quarter of the year by month num
+func (n Calendar) CurrentQuarter() int {
+	switch {
+	case n.Month() <= 3:
+		return 1
+	case n.Month() <= 6:
+		return 2
+	case n.Month() <= 9:
+		return 3
+	}
+
+	return 4
 }
