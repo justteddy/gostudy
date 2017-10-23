@@ -1,19 +1,33 @@
 package main
 
+import (
+	"fmt"
+)
+
 func look(player *Person) string {
 	return player.place.look()
 }
 
-func take(player *Person, elm string) string {
-	// res, ok := player.place.take(elm); !ok {
-	// 	return res
-	// }
+func move(player *Person, place string) string {
+	for destination, name := range placename {
+		if name == place {
+			for _, variant := range worldmap[player.place] {
+				if variant == destination {
+					player.place = variant
+					return player.place.oncome()
+				}
+			}
+			break
+		}
+	}
 
-	return player.place.take(elm)
+	return fmt.Sprintf("нет пути в %s", place)
 }
 
-// func move(player *Person, place *Placable) {
-
+// func take(player *Person, elm string) string {
+// 	/* проверка на наличие рюкзака */
+// 	// return player.place.take(elm)
+// 	return "not realized yet"
 // }
 
 // func wear(player *Person, wear *Wearable) {

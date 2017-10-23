@@ -7,6 +7,10 @@ import (
 	"strings"
 )
 
+//wolrdmap
+var worldmap map[Placable][]Placable
+var placename map[Placable]string
+
 // places
 var kitchen Kitchen
 var room Room
@@ -38,17 +42,20 @@ func handleCommand(command string) string {
 		return look(&player)
 	}
 
-	if len(parsedCmd) == 2 && parsedCmd[0] == "взять" {
-		return take(&player, parsedCmd[1])
+	if len(parsedCmd) == 2 && parsedCmd[0] == "идти" {
+		return move(&player, parsedCmd[1])
 	}
 
-	return "123"
+	// if len(parsedCmd) == 2 && parsedCmd[0] == "взять" {
+	// 	return take(&player, parsedCmd[1])
+	// }
+
+	return "неизвестная команда"
 
 }
 
 func initGame() {
 	var playername string
-
 	fmt.Println("Назови свое имя и начнем:")
 	scanner := bufio.NewScanner(os.Stdin)
 	if scanner.Scan() {
@@ -56,20 +63,20 @@ func initGame() {
 	}
 
 	kitchen = Kitchen{
-		stuffs: []string{"чай"},
+		stuff: []string{"чай"},
 	}
 
 	room = Room{
-		stuffs: []string{"конспекты", "ключи"},
-		wears:  []string{"рюкзак"},
+		stuff: []string{"ключи", "конспекты"},
+		wears: []string{"рюкзак"},
 	}
 
 	outdoor = Outdoor{
-		stuffs: []string{},
+		stuff: []string{},
 	}
 
 	hallway = Hallway{
-		stuffs: []string{},
+		stuff: []string{},
 	}
 
 	player = Person{
@@ -77,6 +84,24 @@ func initGame() {
 		place: &kitchen,
 	}
 
+	worldmap = map[Placable][]Placable{
+		&kitchen: []Placable{&hallway},
+		&hallway: []Placable{&kitchen, &outdoor, &room},
+		&room:    []Placable{&hallway},
+		&outdoor: []Placable{&hallway},
+	}
+
+	placename = map[Placable]string{
+		&kitchen: "кухня",
+		&hallway: "коридор",
+		&room:    "комната",
+		&outdoor: "улица",
+	}
+
+	showHelp()
+}
+
+func showHelp() {
 	fmt.Println("------------------------------------")
 	fmt.Printf("Привет, %s! Давай начнем. Вот какие команды тебе доступны:\n", player.name)
 	fmt.Println("осмотреться - что происходит вокруг тебя")
