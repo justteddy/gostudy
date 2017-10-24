@@ -19,9 +19,29 @@ func accessableWays(place Placable) string {
 	return strings.Join(ways, ", ")
 }
 
+func removeFromPlace(stuff *[]string, thing string) bool {
+	slice := *stuff
+	for i, st := range *stuff {
+		if st == thing {
+			*stuff = append(slice[:i], slice[i+1:]...)
+			return true
+		}
+	}
+
+	return false
+}
+
 type Room struct {
 	stuff []string
 	wears []string
+}
+
+func (r *Room) put(thing string) string {
+	if !removeFromPlace(&r.stuff, thing) {
+		return "нет такого"
+	}
+
+	return fmt.Sprintf("предмет добавлен в инвентарь: %s", thing)
 }
 
 func (r *Room) look() string {
@@ -29,7 +49,7 @@ func (r *Room) look() string {
 	var wear string
 
 	if len(r.stuff) == 0 {
-		stuff = "пустая комната."
+		stuff = "пустая комната"
 	} else {
 		stuff = fmt.Sprintf("на столе: %s", strings.Join(r.stuff, ", "))
 	}
@@ -51,6 +71,10 @@ type Kitchen struct {
 	stuff []string
 }
 
+func (k *Kitchen) put(thing string) string {
+	return "not realized"
+}
+
 func (k *Kitchen) look() string {
 	var stuff string
 	if len(k.stuff) == 0 {
@@ -66,19 +90,12 @@ func (k *Kitchen) oncome() string {
 	return fmt.Sprintf("кухня, ничего интересного. можно пройти - %s", accessableWays(k))
 }
 
-// func (k *Kitchen) take(elm string) string {
-// 	for i, val := range k.stuffs {
-// 		if val == elm {
-// 			k.stuffs = append(k.stuffs[:i], k.stuffs[i+1:]...)
-// 			return fmt.Sprintf("предмет добавлен в инвентарь:%s", elm)
-// 		}
-// 	}
-
-// 	return "нет такого"
-// }
-
 type Hallway struct {
 	stuff []string
+}
+
+func (h *Hallway) put(thing string) string {
+	return "not realized"
 }
 
 func (h *Hallway) look() string {
@@ -91,6 +108,10 @@ func (h *Hallway) oncome() string {
 
 type Outdoor struct {
 	stuff []string
+}
+
+func (o *Outdoor) put(thing string) string {
+	return "not realized"
 }
 
 func (o *Outdoor) look() string {

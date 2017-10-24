@@ -39,16 +39,20 @@ func handleCommand(command string) string {
 	}
 
 	if len(parsedCmd) == 1 && parsedCmd[0] == "осмотреться" {
-		return look(&player)
+		return look()
 	}
 
 	if len(parsedCmd) == 2 && parsedCmd[0] == "идти" {
-		return move(&player, parsedCmd[1])
+		return move(parsedCmd[1])
 	}
 
-	// if len(parsedCmd) == 2 && parsedCmd[0] == "взять" {
-	// 	return take(&player, parsedCmd[1])
-	// }
+	if len(parsedCmd) == 2 && parsedCmd[0] == "одеть" {
+		return wear(parsedCmd[1])
+	}
+
+	if len(parsedCmd) == 2 && parsedCmd[0] == "взять" {
+		return put(parsedCmd[1])
+	}
 
 	return "неизвестная команда"
 
@@ -81,7 +85,7 @@ func initGame() {
 
 	player = Person{
 		name:  playername,
-		place: &kitchen,
+		place: &room,
 	}
 
 	worldmap = map[Placable][]Placable{

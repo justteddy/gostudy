@@ -4,4 +4,5 @@ package main
 type Placable interface {
 	look() string
 	oncome() string
+	put(string) string
 }
