@@ -34,6 +34,7 @@ func removeFromPlace(stuff *[]string, thing string) bool {
 type Room struct {
 	stuff []string
 	wears []string
+	env   []string
 }
 
 func (r *Room) put(thing string) string {
@@ -69,10 +70,15 @@ func (r *Room) oncome() string {
 
 type Kitchen struct {
 	stuff []string
+	env   []string
 }
 
 func (k *Kitchen) put(thing string) string {
-	return "not realized"
+	if !removeFromPlace(&k.stuff, thing) {
+		return "нет такого"
+	}
+
+	return fmt.Sprintf("предмет добавлен в инвентарь: %s", thing)
 }
 
 func (k *Kitchen) look() string {
@@ -92,10 +98,15 @@ func (k *Kitchen) oncome() string {
 
 type Hallway struct {
 	stuff []string
+	env   []string
 }
 
 func (h *Hallway) put(thing string) string {
-	return "not realized"
+	if !removeFromPlace(&h.stuff, thing) {
+		return "нет такого"
+	}
+
+	return fmt.Sprintf("предмет добавлен в инвентарь: %s", thing)
 }
 
 func (h *Hallway) look() string {
@@ -108,10 +119,15 @@ func (h *Hallway) oncome() string {
 
 type Outdoor struct {
 	stuff []string
+	env   []string
 }
 
 func (o *Outdoor) put(thing string) string {
-	return "not realized"
+	if !removeFromPlace(&o.stuff, thing) {
+		return "нет такого"
+	}
+
+	return fmt.Sprintf("предмет добавлен в инвентарь: %s", thing)
 }
 
 func (o *Outdoor) look() string {

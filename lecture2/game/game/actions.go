@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"log"
 	"reflect"
 )
 
@@ -59,6 +60,22 @@ func put(thing string) string {
 	return player.place.put(thing)
 }
 
-// func use(player *Person, stuff *Usable, env string) {
+func use(thing, target string) string {
+	inBag := false
+	correctRoom := false
+	for _, stuff := range player.bag {
+		if stuff == thing {
+			inBag = true
+			break
+		}
+	}
 
-// }
+	if !inBag {
+		return fmt.Sprintf("нет предмета в инвентаре - %s", thing)
+	}
+
+	if place, ok := worldmap[player.place]; !ok {
+		log.Fatal("Shit happens!")
+	}
+
+}

@@ -1,16 +1,31 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+)
 
-func main() {
-	x := []int{1, 2, 3, 4}
-	use(&x)
-
-	fmt.Println(x)
+type Point struct {
+	x, y float64
 }
 
-func use(x *[]int) {
-	slice := *x
-	*x = append(slice[:1], slice[2:]...)
-	// x = append(x[:1], x[2:]...)
+func (p *Point) add(offset float64) {
+	p.x += offset
+	p.y += offset
+}
+
+func main() {
+	p := Point{3, 3}
+
+	use(p)
+}
+
+func use(thing interface{}) {
+	original, ok := thing.(Point)
+
+	if !ok {
+		println("FUUUUCK!")
+	}
+	original.add(3)
+
+	fmt.Println(original)
 }

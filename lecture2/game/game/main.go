@@ -54,6 +54,10 @@ func handleCommand(command string) string {
 		return put(parsedCmd[1])
 	}
 
+	if len(parsedCmd) == 3 && parsedCmd[0] == "применить" {
+		return use(parsedCmd[1], parsedCmd[2])
+	}
+
 	return "неизвестная команда"
 
 }
@@ -81,6 +85,7 @@ func initGame() {
 
 	hallway = Hallway{
 		stuff: []string{},
+		env:   []string{"дверь"},
 	}
 
 	player = Person{
