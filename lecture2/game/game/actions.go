@@ -2,8 +2,6 @@ package main
 
 import (
 	"fmt"
-	"log"
-	"reflect"
 )
 
 func look() string {
@@ -11,15 +9,9 @@ func look() string {
 }
 
 func move(place string) string {
-	for destination, name := range placename {
-		if name == place {
-			for _, variant := range worldmap[player.place] {
-				if variant == destination {
-					player.place = variant
-					return player.place.oncome()
-				}
-			}
-			break
+	for _, variant := range worldmap[player.place] {
+		if variant.string() == place {
+			return variant.oncome()
 		}
 	}
 
@@ -27,29 +19,27 @@ func move(place string) string {
 }
 
 func wear(wear string) string {
-	if wear != "рюкзак" {
-		return fmt.Sprintf("нельзя одеть %s", wear)
-	}
-
-	if reflect.TypeOf(player.place) != reflect.TypeOf(&Room{}) {
-		return fmt.Sprintf("здесь нет %s", wear)
-	}
-
-	var t interface{} = player.place
-	original, ok := t.(*Room)
-	if !ok {
-		return fmt.Sprintf("здесь нет %s", wear)
-	}
-
-	player.isBagWeared = true
-	for i, thing := range original.wears {
-		if thing == wear {
-			original.wears = append(original.wears[:i], original.wears[i+1:]...)
-			break
+	isHere := false
+	for _, wr := range *player.place.wears() {
+		if wr == wear {
+			isHere = true
 		}
 	}
 
-	return fmt.Sprintf("вы одели: %s", wear)
+	if !isHere {
+		return "нет такого"
+	}
+
+	if !getFromCurrentPlace(wear, "wear") {
+		return "нет такого"
+	}
+
+	callback, ok := thingcallback[wear]
+	if !ok {
+		return "нечего одеть"
+	}
+
+	return callback(wear)
 }
 
 func put(thing string) string {
@@ -57,12 +47,17 @@ func put(thing string) string {
 		return "некуда класть"
 	}
 
-	return player.place.put(thing)
+	if !getFromCurrentPlace(thing, "stuff") {
+		return "нет такого"
+	}
+
+	player.addToBag(thing)
+	return fmt.Sprintf("предмет добавлен в инвентарь: %s", thing)
 }
 
 func use(thing, target string) string {
 	inBag := false
-	correctRoom := false
+	envHere := false
 	for _, stuff := range player.bag {
 		if stuff == thing {
 			inBag = true
@@ -74,8 +69,21 @@ func use(thing, target string) string {
 		return fmt.Sprintf("нет предмета в инвентаре - %s", thing)
 	}
 
-	if place, ok := worldmap[player.place]; !ok {
-		log.Fatal("Shit happens!")
+	for _, env := range *player.place.envs() {
+		if target == env {
+			envHere = true
+			break
+		}
 	}
 
+	if !envHere {
+		return "не к чему применить"
+	}
+
+	callback, ok := thingcallback[thing]
+	if !ok {
+		return "не к чему применить"
+	}
+
+	return callback(target)
 }
