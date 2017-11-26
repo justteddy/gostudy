@@ -1,0 +1,27 @@
+package main
+
+import "fmt"
+import "os"
+
+func main() {
+	ch := make(chan int)
+	var x int
+
+	go echo(ch)
+
+	for {
+		x = <-ch
+		fmt.Println(x)
+		if x == 3 {
+			break
+		}
+	}
+}
+
+func echo(ch chan int) {
+	for i := 0; i <= 3; i++ {
+		fmt.Fprintf(os.Stdout, "Now sended to channel - %d\n", i)
+		ch <- i
+	}
+	close(ch)
+}
