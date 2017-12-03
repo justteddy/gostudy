@@ -1,0 +1,17 @@
+package main
+
+import (
+	"fmt"
+	"time"
+)
+
+func main() {
+	ch := make(chan int)
+	go func(ch chan int) {
+		time.Sleep(5000 * time.Millisecond)
+		ch <- 0
+	}(ch)
+
+	fmt.Println("We are waiting, when 5 seconds has been completed")
+	<-ch
+}
