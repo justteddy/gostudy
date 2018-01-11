@@ -1,31 +1,56 @@
+// Copyright © 2016 Alan A. A. Donovan & Brian W. Kernighan.
+// License: https://creativecommons.org/licenses/by-nc-sa/4.0/
+
+// See page 224.
+
+// Reverb2 is a TCP server that simulates an echo.
 package main
 
 import (
+	"bufio"
 	"fmt"
+	"log"
+	"net"
+	"os"
+	"strings"
+	"sync"
 	"time"
 )
 
-func main() {
-	ch := make(chan int, 3)
-	go func(ch chan int) {
-		for i := 1; i <= 4; i++ {
-			ch <- i
-			fmt.Printf("%d Element added\n", i)
+func handleConn(c net.Conn) {
+	input := bufio.NewScanner(c)
+	var wg sync.WaitGroup
+	for input.Scan() {
+		wg.Add(1)
+		fmt.Fprintln(os.Stdout, "Someone hwo listen now, will recieve "+input.Text()+" echo")
+		go func(c net.Conn, shout string, delay time.Duration) {
+			defer wg.Done()
+			fmt.Fprintln(c, "\t", strings.ToUpper(shout))
+			time.Sleep(delay)
+			fmt.Fprintln(c, "\t", shout)
+			time.Sleep(delay)
+		}(c, input.Text(), 1*time.Second)
+	}
+
+	go func() {
+		wg.Wait()
+		if tcpconn, ok := c.(*net.TCPConn); ok {
+			tcpconn.CloseWrite()
 		}
-		close(ch)
-	}(ch)
+	}()
+}
 
-	time.Sleep(300 * time.Millisecond)
-	fmt.Println(len(ch))
-	<-ch
-	fmt.Println(len(ch))
-	<-ch
-	fmt.Println(len(ch))
-
-	// time.Sleep(5000 * time.Millisecond)
-	// fmt.Println("Can't load 4-th element, until read from channel")
-
-	// for v := range ch {
-	// 	fmt.Println("Done", v)
-	// }
+func main() {
+	l, err := net.Listen("tcp", "localhost:8000")
+	if err != nil {
+		log.Fatal(err)
+	}
+	for {
+		conn, err := l.Accept()
+		if err != nil {
+			log.Print(err) // e.g., connection aborted
+			continue
+		}
+		go handleConn(conn)
+	}
 }
