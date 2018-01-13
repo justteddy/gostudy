@@ -51,6 +51,7 @@ func handleConn(conn net.Conn) {
 	who := conn.RemoteAddr().String()
 	ch := make(chan string)
 	me := client{ch, who}
+
 	go clientWriter(conn, ch)
 
 	me.channel <- "You are " + me.name
