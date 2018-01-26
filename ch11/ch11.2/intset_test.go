@@ -1,6 +1,9 @@
 package intset
 
-import "testing"
+import (
+	"fmt"
+	"testing"
+)
 
 func TestAdd(t *testing.T) {
 	var tests = []struct {
@@ -62,8 +65,6 @@ func TestUnion(t *testing.T) {
 		{[]int{10, 11, 9}, []int{5, 4, 3}, "{3 4 5 9 10 11}"},
 	}
 
-	// var intset1 IntSet
-	// var intset2 IntSet
 	for _, test := range tests {
 		intset1 := IntSet{[]uint64{}}
 		intset2 := IntSet{[]uint64{}}
@@ -82,6 +83,18 @@ func TestUnion(t *testing.T) {
 		}
 
 	}
+}
+
+func ExampleAdd() {
+	var x IntSet
+	x.Add(1)
+	fmt.Println(x.String())
+	x.Add(2)
+	x.Add(3)
+	fmt.Println(x.String())
+	//Output:
+	//{1}
+	//{1 2 3}
 }
 
 func bitUint(x []int) []uint64 {
